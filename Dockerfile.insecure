@@ -1,0 +1,27 @@
+# ╔══════════════════════════════════════════════════════════════╗
+# ║  Dockerfile.insecure — LAB 3 TARGET                        ║
+# ║                                                              ║
+# ║  Build this image first, scan it with Trivy, and count     ║
+# ║  the HIGH/CRITICAL findings. Then compare with             ║
+# ║  Dockerfile.secure to see how hardening reduces the         ║
+# ║  attack surface.                                            ║
+# ║                                                              ║
+# ║  Build:  docker build -f Dockerfile.insecure -t lms:insecure .  ║
+# ║  Scan:   trivy image --severity HIGH,CRITICAL lms:insecure  ║
+# ╚══════════════════════════════════════════════════════════════╝
+
+# Problem 1: full JDK — 600MB+, includes compilers, debuggers, tools
+FROM openjdk:17-jdk
+
+# Problem 2: running as root (uid 0) — if app is compromised, attacker has root
+WORKDIR /app
+
+# Problem 3: copying entire target directory — may include test artifacts
+COPY target/ .
+
+# Problem 4: no HEALTHCHECK — Kubernetes cannot determine if app is alive
+EXPOSE 8080
+
+# Problem 5: no resource limits at image level
+# Problem 6: single-layer build — no caching, slow rebuilds
+ENTRYPOINT ["java", "-jar", "lms-1.0.0.jar"]

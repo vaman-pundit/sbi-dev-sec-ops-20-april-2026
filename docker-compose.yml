@@ -1,19 +1,38 @@
-version: '3.9'
-
 services:
-  ems:
+  lms:
+    image: lms:secure
     build:
       context: .
-      dockerfile: Dockerfile        # insecure by default — use Dockerfile.secure for Lab 3
-    container_name: ems-api
+      dockerfile: Dockerfile.secure
     ports:
       - "8080:8080"
-    env_file: .env                  # .env is gitignored — secrets stay out of source
-    environment:
-      - SPRING_PROFILES_ACTIVE=dev
-    restart: unless-stopped
+
+    # DevSecOps: secrets from .env file (never hardcoded here)
+    # .env is listed in .gitignore — never committed to version control
+    env_file: .env
+
+    # ── Runtime security constraints (Module 6) ─────────────────────────────
+    security_opt:
+      - no-new-privileges:true   # prevents privilege escalation via setuid binaries
+
+    read_only: true              # root filesystem is read-only
+    tmpfs:
+      - /tmp                     # writable temp space LMS needs for JVM temp files
+
+    cap_drop:
+      - ALL                      # drop ALL Linux capabilities
+    cap_add: []                  # add NONE back — LMS needs zero capabilities
+
+    mem_limit: 512m
+    cpus: "1.0"
+
+    user: "1000:1000"            # run as non-root (matches lmsuser in Dockerfile)
+
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://localhost:8080/actuator/health"]
       interval: 30s
       timeout: 10s
       retries: 3
+      start_period: 60s
+
+    restart: unless-stopped

@@ -1,0 +1,27 @@
+rules:
+  - id: no-hardcoded-jwt-secret
+    pattern: |
+      private static final String $SECRET = "..."
+    message: >
+      Hardcoded secret detected in $SECRET.
+      Use @Value("${jwt.secret}") injection or HashiCorp Vault.
+      A secret committed to git is exposed forever — even after deletion.
+    severity: ERROR
+    languages: [java]
+    metadata:
+      category: security
+      owasp: "A07:2021 - Identification and Authentication Failures"
+
+  - id: no-string-concat-jpql
+    pattern: |
+      $EM.createQuery("..." + $INPUT, ...)
+    message: >
+      String concatenation in JPQL query detected.
+      This is vulnerable to SQL/JPQL injection (OWASP A03:2021).
+      Use parameterized queries: createQuery("... :param").setParameter("param", $INPUT)
+      Or better: use Spring Data derived query methods (findByBranchName(name)).
+    severity: ERROR
+    languages: [java]
+    metadata:
+      category: security
+      owasp: "A03:2021 - Injection"

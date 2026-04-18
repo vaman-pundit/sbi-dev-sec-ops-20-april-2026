@@ -1,0 +1,16 @@
+package com.sbi.lms;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+
+@SpringBootTest
+@ActiveProfiles("test")
+class LmsApplicationTests {
+
+    @Test
+    void contextLoads() {
+        // Smoke test — confirms the Spring context wires up correctly.
+        // Run: mvn test
+    }
+}
