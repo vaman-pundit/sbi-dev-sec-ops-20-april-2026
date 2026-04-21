@@ -208,9 +208,11 @@ services:
 ---
 
 # Lab 3: Container Security Scan
-`11:30 – 12:15` · Build LMS image · Trivy scan · Fix Dockerfile · Rebuild · Re-scan
+`11:30 – 12:15` · Build LMS image · Trivy scan · Fix Dockerfile · Rebuild · Re-scan 
 
 > **Lab Objective:** Build the insecure LMS Docker image, scan it with Trivy to identify vulnerabilities, apply Dockerfile hardening (multi-stage build + non-root user), rebuild, and re-scan to confirm vulnerability count drops.
+
+[text](https://github.com/aquasecurity/trivy/releases/)
 
 ## Step 1 — Build the Insecure LMS Image
 
