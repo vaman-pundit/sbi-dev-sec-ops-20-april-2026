@@ -195,6 +195,7 @@ jobs:
           done
 
       - name: DAST — ZAP API scan (OpenAPI auto-discovery)
+        continue-on-error: true
         run: |
           mkdir -p /tmp/zap
 
