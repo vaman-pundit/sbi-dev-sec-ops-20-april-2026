@@ -197,27 +197,20 @@ jobs:
       - name: DAST — ZAP API scan (OpenAPI auto-discovery)
         run: |
           mkdir -p /tmp/zap
-          docker run --network=host \
+
+          # Create network
+          docker network create zap-net
+
+          # Connect LMS container to network
+          docker network connect zap-net lms-dast
+
+          # Run ZAP in same network
+          docker run \
+            --network=zap-net \
             -v /tmp/zap:/zap/wrk \
             ghcr.io/zaproxy/zaproxy:stable \
             zap-api-scan.py \
-            -t http://localhost:8080/v3/api-docs \
+            -t http://lms-dast:8080/v3/api-docs \
             -f openapi \
             -r zap-report.html \
             -I
-
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: zap-report
-          path: /tmp/zap/zap-report.html
-
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: zap-report
-          path: /tmp/zap/zap-report.html
-
-      - name: Stop LMS container
-        if: always()
-        run: docker stop lms-dast || true
